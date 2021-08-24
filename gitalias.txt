@@ -46,30 +46,9 @@
 #     l = log --graph --oneline
 #
 #
-# ## Contributor advice
-#
-# Typically a short alias for a command and its options
-# is in the same order as the command and option words:
-#
-#   * Right: `fab = foo --alpha --bravo`
-# 
-#   * Wrong: `baf = foo --alpha --bravo`
-#
-#   * Wrong: `abf = foo --alpha --bravo`
-#
-# Typically a short alias for a command and its options
-# uses the first letter of each option word:
-#
-#     * Right: `fab = foo --alpha-bravo`
-#
-#     * Wrong: `fa = foo --alpha-bravo`
-#
-#     * Wrong: `fb = foo --alpha-bravo`
-#
-#
 # ## Links
 #
-#   * [GitAlias.com website](http://gitalias.com)
+#   * [GitAlias.com website](https://gitalias.com)
 #   * [GitAlias GitHub](https://github.com/gitalias)
 #   * [Git Basics - Git Aliases](https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases)
 #   * [Git Basics - Tips and Tricks](https://git-scm.com/book/en/v1/Git-Basics-Tips-and-Tricks)
@@ -77,9 +56,9 @@
 # ## Tracking
 #
 #   * Package: gitalias
-#   * Version: 24.0.0
+#   * Version: 25.1.0
 #   * Created: 2016-06-17T00:00:00Z
-#   * Updated: 2021-04-14T23:10:25Z
+#   * Updated: 2021-08-13T19:12:58Z
 #   * License: GPL-2.0-only
 #   * Contact: Joel Parker Henderson (joel@joelparkerhenderson.com)
 ##
@@ -103,13 +82,11 @@
   m = merge
   o = checkout
   p = pull
-  r = remote
   s = status
   w = whatchanged
 
   ##
   # Short aliases for our frequent commands.
-  #
   ##
 
   ### add ###
@@ -140,6 +117,14 @@
     git config \"branch.$branch.description\"; \
   };f"
 
+  # branch verbose: When in list mode, show sha1, commit subject line, relationship, etc.
+  # This is identical to doing `git b -v`.
+  bv = branch --verbose
+
+  # branch verbose x2: When in list mode, show path, upstream branch, etc.
+  # This is identical to doing `git b -vv`.
+  bvv = branch --verbose --verbose
+
   ### commit ###
 
   # commit - amend the tip of the current branch rather than creating a new commit.
@@ -161,7 +146,7 @@
 
   # checkout - update the working tree to match a branch or paths. [same as "o" for "out"]
   co = checkout
-  con = checkout --no-guess
+  cong = checkout --no-guess
 
   ### cherry-pick ###
 
@@ -174,8 +159,11 @@
   # cherry-pick - continue the picking process
   cpc = cherry-pick --continue
 
-  # cherry-pick without making a commit, and when when recording the commit, append a line that says "(cherry picked from commit ...)"
-  cp-nx = cherry-pick --no-commit -x
+  # cherry-pick --no-commit a.k.a. without making a commit
+  cpn = cherry-pick -n
+
+  # cherry-pick --no-commit a.k.a. without making a commit, and when when recording the commit, append a line that says "(cherry picked from commit ...)"
+  cpnx = cherry-pick -n -x
 
   ### diff ###
 
@@ -191,18 +179,21 @@
   # diff deep - show changes with our preferred options. Also aliased as `diff-deep`.
   dd = diff --check --dirstat --find-copies --find-renames --histogram --color
 
-  ### clean ###
+  ### fetch ###
 
-  # clean everything to be pristine
-  cleanest = clean -ffdx
+  # fetch all - fetch all remotes.
+  fa = fetch --all
+
+  # fetch all verbose - fetch all remotes, with verbose output.
+  fav = fetch --all --verbose
 
   ### grep ###
 
   # grep i.e. search for text
   g = grep
 
-  # grep - show line number
-  gl = grep --line-number
+  # grep with -n (--line-number) means show line number
+  gn = grep -n
 
   # grep group - search with our preferred options. Also aliased as `grep-group`.
   gg = grep --break --heading --line-number --color
@@ -222,7 +213,7 @@
   lfp = log --first-parent
 
   # log with items appearing in topological order, i.e. descendant commits are shown before their parents.
-  lt = log --topo-order
+  lto = log --topo-order
 
   # log like - we like this summarization our key performance indicators. Also aliased as `log-like`.
   ll = log --graph --topo-order --date=short --abbrev-commit --decorate --all --boundary --pretty=format:'%Cgreen%ad %Cred%h%Creset -%C(yellow)%d%Creset %s %Cblue[%cn]%Creset %Cblue%G?%Creset'
@@ -235,8 +226,26 @@
   # ls-files - show information about files in the index and the working tree; like Unix "ls" command.
   ls = ls-files
 
-  # ls-ignored -  list files that git has ignored.
-  ls-ignored = ls-files --others --i --exclude-standard
+  # lsd - List files with debug information
+  lsd = ls-files --debug
+
+  # lsfn - List files with full name.
+  lsfn = ls-files --full-name
+
+  # lsio -  list files that git has ignored.
+  #
+  # git ls-files:
+  #
+  #     -i, --ignored
+  #         Show only ignored files in the output …
+  #
+  #     -o, --others
+  #         Show other (i.e. untracked) files in the output …
+  #
+  #     --exclude-standard
+  #         Add the standard Git exclusions …
+  #
+  lsio = ls-files --ignored --others --exclude-standard
 
   ### merge ###
 
@@ -343,14 +352,18 @@
   # rebase - restart the rebasing process by skipping the current patch.
   rbs = rebase --skip
 
-  # rbi - rebase interactive on our unpushed commits.
+  # rebase interactive - do the rebase with prompts.
+  rbi = rebase --skip
+
+  # rbiu - rebase interactive on our unpushed commits.
   #
   # Before we push our local changes, we may want to do some cleanup,
   # to improve our commit messages or squash related commits together.
   #
   # Let's say I've pushed two commits that are related to a new feature and
   # I have another where I made a spelling mistake in the commit message.
-  # When I run "git rbi" I get dropped into my editor with this:
+  #
+  # When I run "git rbiu" I get dropped into my editor with this:
   #
   #     pick 7f06d36 foo
   #     pick ad544d0 goo
@@ -371,7 +384,7 @@
   #     3400455 - foo
   #     5dae0a0 - whatever
   #
-  rbi = rebase --interactive @{upstream}
+  rbiu = rebase --interactive @{upstream}
 
   # See https://blog.filippo.io/git-fixup-amending-an-older-commit/
   # This is a slightly modified version
@@ -395,12 +408,6 @@
 
   # remote prune - deletes all stale remote-tracking branches under <name>.
   rrp = remote prune
-
-  incoming = !git remote update --prune; git log ..@{upstream}
-  outgoing = log @{upstream}..
-
-  # Push to all remotes
-  push-to-all-remotes = !git remote | xargs -I% -n1 git push %
 
   ### revert ###
 
@@ -448,17 +455,50 @@
 
   ### ALIAS MANAGEMENT ###
 
-  # Show our defined alias list
-  aliases = "!git config --get-regexp '^alias\\.' | cut -c 7- | sed 's/ / = /'"
+  # git add-alias: create a new git alias.
+  add-alias = "!f() { \
+      if [ $# != 3 ]; then \
+        echo \"Usage: git add-alias ( --local | --global ) <alias> <command>\"; \
+        echo "Error: this command needs 3 arguments."; \
+        return 2; \
+      fi; \
+      if [ ! -z \"$(git config \"$1\" --get alias.\"$2\")\" ]; then \
+          echo "Alias "$2" already exists, thus no change happened."; \
+          return 3; \
+      fi; \
+      git config $1 alias.\"$2\" \"$3\" && \
+      return 0; \
+      echo \"Usage: git add-alias ( --local | --global ) <alias> <command>\"; \
+      echo "Error: unknown failure."; \
+      return 1; \
+  }; f"
 
-  add-alias = "!f() { [ $# = 3 ] && git config $1 alias.\"$2\" \"$3\" && return 0 || echo \"Usage: git add-(local|global)-alias <new alias> <original command>\" >&2 && return 1; }; f"
-  add-global-alias = "!git add-alias --global"
-  add-local-alias = "!git add-alias --local"
-
-  # Rename an alias
-  rename-alias = "!f() { [ $# = 3 ] && [ $2 != $3 ] && [ ! -z \"$(git config $1 --get alias.$2)\" ] && [ -z \"$(git config $1 --get alias.$3)\" ] && git config $1 alias.$3 \"$(git config $1 --get alias.$2)\" && git config $1 --unset alias.$2 && return 0 || echo \"Usage: git rename-(local|global)-alias <alias existing name> <new alias name>\nThe alias you are going to rename must exist and new name must not exist.\" >&2 && return 1; };f"
-  rename-global-alias = "!git rename-alias --global"
-  rename-local-alias = "!git rename-alias --local"
+  # git move-alias: rename an existing git alias.
+  move-alias = "!f() { \
+      if [ $# != 3 ]; then \
+          echo \"Usage: git move-alias ( --local | --global ) <alias existing name> <new alias name>\"; \
+          echo "Error: this command needs 3 arguments."; \
+          return 2; \
+      fi; \
+      if [ $2 == $3 ]; then \
+          echo "The alias names are identical, thus no change happened."; \
+          return 3; \
+      fi; \
+      if [ -z \"$(git config \"$1\" --get alias.\"$2\")\" ]; then \
+          echo "Alias "$2" does not exist, thus no change happened."; \
+          return 4; \
+      fi; \
+      if [ ! -z \"$(git config $1 --get alias.$3)\" ]; then \
+          echo "Alias "$3" already exists, thus no change happened."; \
+          return 5; \
+      fi; \
+      git config \"$1\" alias.\"$3\" \"$(git config $1 --get alias.$2)\" && \
+      git config \"$1\" --unset alias.\"$2\" && \
+      return 0; \
+      echo \"Usage: git move-alias ( --local | --global ) <alias existing name> <alias new name>\"; \
+      echo "Error: unknown failure."; \
+      return 1; \
+  };f"
 
   # Last tag in the current branch
   lasttag = describe --tags --abbrev=0
@@ -467,9 +507,7 @@
   lasttagged = !git describe --tags `git rev-list --tags --max-count=1`
 
   # From https://gist.github.com/492227
-  head = log -n1
   heads = !"git log origin/main.. --format='%Cred%h%Creset;%C(yellow)%an%Creset;%H;%Cblue%f%Creset' | git name-rev --stdin --always --name-only | column -t -s';'"
-  lost = !"git fsck | awk '/dangling commit/ {print $3}' | git show --format='SHA1: %C(yellow)%h%Creset %f' --stdin | awk '/SHA1/ {sub(\"SHA1: \", \"\"); print}'"
 
   ### diff-* ###
 
@@ -577,11 +615,11 @@
   log-year  = log --since=1-year-ago
 
   # Show the log of my own recent hour, day, week, month, year
-  log-my-hour  = log --author $(git config user.email) --since=1-hour-ago
-  log-my-day   = log --author $(git config user.email) --since=1-day-ago
-  log-my-week  = log --author $(git config user.email) --since=1-week-ago
-  log-my-month = log --author $(git config user.email) --since=1-month-ago
-  log-my-year  = log --author $(git config user.email) --since=1-year-ago
+  log-my-hour  = !git log --author $(git config user.email) --since=1-hour-ago
+  log-my-day   = !git log --author $(git config user.email) --since=1-day-ago
+  log-my-week  = !git log --author $(git config user.email) --since=1-week-ago
+  log-my-month = !git log --author $(git config user.email) --since=1-month-ago
+  log-my-year  = !git log --author $(git config user.email) --since=1-year-ago
 
   # Show a specific format string and its number of log entries
   log-of-format-and-count = "!f() { format=\"$1\"; shift; git log $@ --format=oneline --format="$format" | awk '{a[$0]++}END{for(i in a){print i, a[i], int((a[i]/NR)*100) \"%\"}}' | sort; }; f"
@@ -782,6 +820,160 @@
     printf \"\nMost-active files, with churn count\n\"; git churn | head -7; \
   }; f"
 
+  ### SHOW COMMIT HASHES VIA ORDERING ###
+
+  # Show a branch's commit hash (or multiple hashes)
+  # by using ordering keywords ("first" or "last"):
+  #
+  #   * `branch-commit-first`: show a branch's first commit hash (or hashes)
+  #
+  #   * `branch-commit-last`: show a branch's last commit hash (or hashes)
+  #
+  #   * `branch-commit-prev`: show a branch's previous commit hash (or hashes)
+  #
+  #   * `branch-commit-next`: show a branch's next commit hash (or hashes)
+  #
+  # Inspirations:
+  #
+  #   * Email from Demian proposing these aliases
+  #
+  #   * https://github.com/hutusi/git-paging
+  #
+
+  # branch-commit-first
+  #
+  # Show a branch's first commit hash (or hashes).
+  #
+  # Syntax:
+  #
+  #    git branch-commit-first [branch name [commit count]]
+  #
+  # Options:
+  #
+  #   * branch name: default is the current branch name.
+  #
+  #   * commit count: default is 1
+  #
+  # Example: show the current branch's first commit hash:
+  #
+  #     git branch-commit-first
+  #
+  # Example: show the "foo" branch's first commit hash:
+  #
+  #     git branch-commit-first foo
+  #
+  # Example: show the "foo" branch's first 3 commit hashes:
+  #
+  #     git branch-commit-first foo 3
+  #
+  branch-commit-first = "!f() { \
+      branch="${1:-$(git current-branch)}"; \
+      count="${2:-1}"; \
+    git log --reverse --pretty=%H "$branch" | \
+    head -"$count"; \
+  }; f" 
+
+  # branch-commit-last
+  #
+  # Show a branch's last commit hash (or hashes).
+  #
+  # Syntax:
+  #
+  #    git branch-commit-last [branch name [commit count]]
+  #
+  # Options:
+  #
+  #   * branch name: default is the current branch name.
+  #
+  #   * commit count: default is 1
+  #
+  # Example: show the current branch's last commit hash:
+  #
+  #     git branch-commit-last
+  #
+  # Example: show the "foo" branch's last commit hash:
+  #
+  #     git branch-commit-last foo
+  #
+  # Example: show the "foo" branch's last 3 commit hashes:
+  #
+  #     git branch-commit-last foo 3
+  #
+  branch-commit-last = "!f() { \
+      branch="${1:-$(git current-branch)}"; \
+      count="${2:-1}"; \
+    git log --pretty=%H "$branch" | \
+    head -"$count"; \
+  }; f"
+
+  # branch-commit-prev
+  #
+  # Show a branch's previous commit hash (or hashes).
+  #
+  # Syntax:
+  #
+  #    git branch-commit-prev [branch name [commit count]]
+  #
+  # Options:
+  #
+  #   * branch name: default is the current branch name.
+  #
+  #   * commit count: default is 1
+  #
+  # Example: show the current branch's previous commit hash:
+  #
+  #     git branch-commit-prev
+  #
+  # Example: show the "foo" branch's previous commit hash:
+  #
+  #     git branch-commit-prev previous
+  #
+  # Example: show the "foo" branch's previous 3 commit hashes:
+  #
+  #     git branch-commit-prev foo 3
+  #
+  branch-commit-prev = "!f() { \
+      branch="${1:-$(git current-branch)}"; \
+      count="${2:-1}"; \
+    git log --pretty=%H "$branch" | \
+    grep -A "$count" $(git rev-parse HEAD) | \
+    tail +2; \
+  }; f"
+
+  # branch-commit-next
+  #
+  # Show a branch's next commit hash (or hashes).
+  #
+  # Syntax:
+  #
+  #    git branch-commit-next [branch name [commit count]]
+  #
+  # Options:
+  #
+  #   * branch name: default is the current branch name.
+  #
+  #   * commit count: default is 1
+  #
+  # Example: show the current branch's next commit hash:
+  #
+  #     git branch-commit-next
+  #
+  # Example: show the "foo" branch's next commit hash:
+  #
+  #     git branch-commit-next next
+  #
+  # Example: show the "foo" branch's next 3 commit hashes:
+  #
+  #     git branch-commit-next foo 3
+  #
+  branch-commit-next = "!f() { \
+      branch="${1:-$(git current-branch)}"; \
+      count="${2:-1}"; \
+    git log --reverse --pretty=%H "$branch" | \
+    grep -A "$count" $(git rev-parse HEAD) | \
+    tail +2; \
+  }; f"
+
   ### REF ALIASES ###
 
   ref-recent = "!git for-each-ref --sort=-committerdate --format='%(committerdate:short) %(refname:short) %(objectname:short) %(contents:subject)' refs/heads/"
@@ -794,11 +986,8 @@
   # Given any git object, try to show it briefly
   whatis = show --no-patch --pretty='tformat:%h (%s, %ad)' --date=short
 
-  # Show who contributed with summarized changes
-  who = shortlog --summary --
-
   # Show who contributed, in descending order by number of commits
-  whorank = shortlog --summary --numbered --no-merges
+  who = shortlog --summary --numbered --no-merges
 
   # List all issues mentioned in commit messages between range of commits
   #
@@ -900,13 +1089,6 @@
   #
   clone-lean = clone --depth 1 --filter=combine:blob:none+tree:0 --no-checkout 
 
-  # Stash aliases for push & pop
-  #
-  # Note that if you are using an older version of git, before 2.16.0,
-  # then you can use the older "stash save" instead of the newer "stash push".
-  save = stash push
-  pop = stash pop
-
   # Stash snapshot - from http://blog.apiaxle.com/post/handy-git-tips-to-stop-you-getting-fired/
   # Take a snapshot of your current working tree without removing changes.
   # This is handy for refactoring where you can't quite fit what you've done
@@ -954,8 +1136,8 @@
   ignore = "!git status | grep -P \"^\\t\" | grep -vF .gitignore | sed \"s/^\\t//\" >> .gitignore"
 
   # Do a push/pull for just one branch
-  push1 = "!git push origin $(git branch-name)"
-  pull1 = "!git pull origin $(git branch-name)"
+  push1 = "!git push origin $(git current-branch)"
+  pull1 = "!git pull origin $(git current-branch)"
 
   # Track and untrack, with default parameters, and with printing the command
   track = "!f(){ branch=$(git rev-parse --abbrev-ref HEAD); cmd=\"git branch $branch -u ${1:-origin}/${2:-$branch}\"; echo $cmd; $cmd; }; f"
@@ -976,19 +1158,18 @@
   reset-commit-hard  = reset --hard HEAD~1
   reset-commit-clean = !git reset --hard HEAD~1 && git clean -fd
   reset-to-pristine  = !git reset --hard && git clean -ffdx
-  reset-to-upstream  = !git reset --hard $(git upstream-name)
+  reset-to-upstream  = !git reset --hard $(git upstream-branch)
 
   # Undo is simply a synonym for "reset" because "undo" can help novices.
   undo-commit        = reset --soft HEAD~1
   undo-commit-hard   = reset --hard HEAD~1
   undo-commit-clean  = !git reset --hard HEAD~1 && git clean -fd
   undo-to-pristine   = !git reset --hard && git clean -ffdx
-  undo-to-upstream   = !git reset --hard $(git upstream-name)
+  undo-to-upstream   = !git reset --hard $(git upstream-branch)
 
   # Nicknames
   uncommit = reset --soft HEAD~1
   unadd = reset HEAD
-  unstage = reset HEAD
 
   # Discard changes in a (list of) file(s) in working tree
   discard = checkout --
@@ -1002,19 +1183,25 @@
   # See https://help.github.com/articles/removing-sensitive-data-from-a-repository/
   expunge = !"f() { git filter-branch --force --index-filter \"git rm --cached --ignore-unmatch $1\" --prune-empty --tag-name-filter cat -- --all }; f"
 
-  # Edit all files of the given type
-  edit-cached   = !"f() { git ls-files --cached          | sort -u ; }; `git var GIT_EDITOR` `f`"
-  edit-deleted  = !"f() { git ls-files --deleted         | sort -u ; }; `git var GIT_EDITOR` `f`"
-  edit-others   = !"f() { git ls-files --others          | sort -u ; }; `git var GIT_EDITOR` `f`"
-  edit-ignored  = !"f() { git ls-files --ignored         | sort -u ; }; `git var GIT_EDITOR` `f`"
-  edit-killed   = !"f() { git ls-files --killed          | sort -u ; }; `git var GIT_EDITOR` `f`"
-  edit-modified = !"f() { git ls-files --modified        | sort -u ; }; `git var GIT_EDITOR` `f`"
-  edit-stage    = !"f() { git ls-files --stage | cut -f2 | sort -u ; }; `git var GIT_EDITOR` `f`"
+  # Add all files of the given type
+  add-cached   = !"f() { git ls-files --cached             | sort -u ; }; git add `f`"
+  add-deleted  = !"f() { git ls-files --deleted            | sort -u ; }; git add `f`"
+  add-others   = !"f() { git ls-files --others             | sort -u ; }; git add `f`"
+  add-ignored  = !"f() { git ls-files --ignored            | sort -u ; }; git add `f`"
+  add-killed   = !"f() { git ls-files --killed             | sort -u ; }; git add `f`"
+  add-modified = !"f() { git ls-files --modified           | sort -u ; }; git add `f`"
+  add-stage    = !"f() { git ls-files --stage    | cut -f2 | sort -u ; }; git add `f`"
+  add-unmerged = !"f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
 
-  # Editing and adding conflicted files: when we get many merge conflicts
-  # and want to quickly solve them using an editor, then add the  files.
+  # Edit all files of the given type
+  edit-cached   = !"f() { git ls-files --cached             | sort -u ; }; `git var GIT_EDITOR` `f`"
+  edit-deleted  = !"f() { git ls-files --deleted            | sort -u ; }; `git var GIT_EDITOR` `f`"
+  edit-others   = !"f() { git ls-files --others             | sort -u ; }; `git var GIT_EDITOR` `f`"
+  edit-ignored  = !"f() { git ls-files --ignored            | sort -u ; }; `git var GIT_EDITOR` `f`"
+  edit-killed   = !"f() { git ls-files --killed             | sort -u ; }; `git var GIT_EDITOR` `f`"
+  edit-modified = !"f() { git ls-files --modified           | sort -u ; }; `git var GIT_EDITOR` `f`"
+  edit-stage    = !"f() { git ls-files --stage    | cut -f2 | sort -u ; }; `git var GIT_EDITOR` `f`"
   edit-unmerged = !"f() { git ls-files --unmerged | cut -f2 | sort -u ; }; `git var GIT_EDITOR` `f`"
-  add-unmerged  = !"f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
 
   # Ours & Theirs - easy merging when you know which files you want
   #
@@ -1038,7 +1225,7 @@
   # this cleaning will facilitate a rebase, because there won't be any conflict
   # due to an "unclean" working directory (not in sync with the index).
   # The unwip will restore the deleted files to the working tree.
-  wip = !"git add --all; git ls-files --deleted -z | xargs -0 git rm; git commit --message=wip"
+  wip = !"git add --all; git ls-files --deleted -z | xargs -r -0 git rm; git commit --message=wip"
   unwip = !"git log -n 1 | grep -q -c wip && git reset HEAD~1"
 
   # Assume
@@ -1074,26 +1261,32 @@
 
   assume   = update-index --assume-unchanged
   unassume = update-index --no-assume-unchanged
-  assume-all = "!git st -s | awk {'print $2'} | xargs git assume"
-  unassume-all = "!git assumed | xargs git update-index --no-assume-unchanged"
+  assume-all = "!git st -s | awk {'print $2'} | xargs -r git assume"
+  unassume-all = "!git assumed | xargs -r git update-index --no-assume-unchanged"
   assumed  = !"git ls-files -v | grep ^h | cut -c 3-"
 
   # Delete all branches that have already been merged into the main branch.
-  main-cleanse = !git main-cleanse-local; git main-cleanse-remote
+  cull-branches = !git cull-local-branches; git cull-remote-branches;
 
   # Delete all local branches that have been merged into the local main branch.
-  main-cleanse-local = "!git checkout main && git branch --merged | xargs git branch --delete"
+  cull-local-branches = "!git checkout main && git branch --merged | xargs -r git branch --delete"
 
   # Delete all remote branches that have been merged into the remote main branch.
-  main-cleanse-remote = !"git branch --remotes --merged origin/main | sed 's# *origin/##' | grep -v '^main$' xargs -I% git push origin :% 2>&1 | grep --colour=never 'deleted'"
+  cull-remote-branches = !"git branch --remotes --merged origin/main | sed 's# *origin/##' | grep -v '^main$' | xargs -r -I% git push origin :% 2>&1 | grep --colour=never 'deleted'"
 
   # Publish the current branch by pushing it to the remote "origin",
   # and setting the current branch to track the upstream branch.
-  publish = !"git push --set-upstream origin $(git branch-name)"
+  publish = !"git push --set-upstream origin $(git current-branch)"
 
   # Unpublish the current branch by deleting the
   # remote version of the current branch.
-  unpublish = !"git push origin :$(git branch-name)"
+  unpublish = !"git push origin :$(git current-branch)"
+
+  # git inbound: show incoming changes with upstream.
+  inbound = !git remote update --prune; git log ..@{upstream}
+
+  # git outbound: show outgoing changes with upstream.
+  outbound = log @{upstream}..
 
   # Delete a branch name, then create the same branch name based on main -
   # useful if you have, for example, a development branch and main branch
@@ -1105,6 +1298,7 @@
 
   # Friendly wording is easier to remember.
   # Thanks to http://gggritso.com/human-git-aliases
+  aliases = "!git config --get-regexp '^alias\\.' | cut -c 7- | sed 's/ / = /'"
   branches = branch -a
   tags = tag -n1 --list
   stashes = stash list
@@ -1116,10 +1310,10 @@
   top-name = rev-parse --show-toplevel
 
   # Get the current branch name
-  branch-name = rev-parse --abbrev-ref HEAD
+  current-branch = rev-parse --abbrev-ref HEAD
 
   # Get the upstream branch name
-  upstream-name = !git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD)
+  upstream-branch = !git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD)
 
   # Execute shell scripts. Git always runs scripts in the top directory.
   # For example "git exec pwd" will always show you the top directory.
@@ -1127,6 +1321,9 @@
 
 
   ### MAINTENANCE ALIASES ###
+
+  # cleaner: clean everything to be pristine
+  cleaner = clean -ffdx
 
   # pruner: prune everything that is unreachable now.
   #
@@ -1174,9 +1371,9 @@
   # This command takes a long time to run, perhaps even overnight.
   #
   # Currently, this command simply calls `git pruner` and `git repacker`.
-  # There's a step that may be unnecessarying, calling `git prune-pack`.
+  # There's a step that may be unnecessarying, calling `git prune-packer`.
   #
-  optimize = !git pruner; git repacker; git prune-packed
+  optimizer = !git pruner; git repacker; git prune-packed
 
 
   ### ADVANCED ALIASES ###
@@ -1200,21 +1397,37 @@
   # If the program to debug is a builtin, we use this alias.
   debug = !GIT_PAGER= gdb --args git
 
-  # Getting the diff of only one function: when we want to see just the
-  # differences of one function in one file in two different commits,
-  # we create two temp files which contain only the function, then diff.
-  # Use this alias this way: git funcdiff <old-rev> <new-rev> <path> <function>
-  # diff-func = !sh -c "git show \"\$1:\$3\" | sed -n \"/^[^ \t].*\$4(/,/^}/p\" > .tmp1 && git show \"\$2:\$3\" | sed -n \"/^[^ \t].*\$4(/,/^}/p\" > .tmp2 && git diff --no-index .tmp1 .tmp2" -
+  # git diff-chunk - Get the diff of one chunk.
+  #
+  # Suppose we want to see just the differences of one chunk,
+  # such as one function, in one file, in two different commits.
+  #
+  # This alias creates two temp files which contain only the chunk,
+  # then does a typical git diff.
+  #
+  # Syntax:
+  #
+  #     git diff-chunk <old-rev> <new-rev> <path> <chunk pattern>
+  #
+  diff-chunk = "!f() { \
+    git show \"$1:$3\" | sed -n \"/^[^ \t].*$4(/,/^}/p\" > .tmp1 ; \
+    git show \"$2:$3\" | sed -n \"/^[^ \t].*$4(/,/^}/p\" > .tmp2 ; \
+    git diff --no-index .tmp1 .tmp2 ; \
+  }; f"
 
   # Calling "interdiff" between commits: if upstream applied a
   # slightly modified patch, and we want to see the modifications,
   # we use the program interdiff of the patchutils package.
   intercommit = !sh -c 'git show "$1" > .git/commit1 && git show "$2" > .git/commit2 && interdiff .git/commit[12] | less -FRS' -
 
-  # Prune all your stale remote branches: there's no way to tell
-  # git remote update to prune stale branches, and git remote prune
-  # does not understand --all. So here is a shell command to do it.
-  prune-all = !git remote | xargs -n 1 git remote prune
+  # git remotes-push - For each remote branch, push it.
+  remotes-push = !git remote | xargs -I% -n1 git push %
+
+  # git remotes-prune - For each remote branch, prune it.
+  # There's no way to tell `git remote update` to prune stale branches,
+  # and `git remote prune` does not currently understand `--all`. 
+  # So this shell command iterates on each remote, and prunes it.
+  remotes-prune = !git remote | xargs -n 1 git remote prune
 
   # Thanks to cody cutrer
   cherry-pick-merge = !"sh -c 'git cherry-pick --no-commit --mainline 1 $0 && \
@@ -1244,7 +1457,6 @@
 
   ##########################################################################
 
-  ##
   # Git alias settings suitable for topic branches.
   #
   # These aliases are simple starting points for a simple topic flow.
@@ -1278,9 +1490,7 @@
   #   * Update your project management software with the new topic name.
   #
   # Customize these aliases as you like for your own workflow.
-  ##
 
-  ##
   # Provide the name of the topic base branch, such as "main".
   #
   # When we create a new topic branch, we base it on the topic base branch.
@@ -1291,20 +1501,18 @@
   # the name for your local repo, or your own user's global configuration, 
   # or your system configuration, by using `git config` such as:
   #
-  #    $ git config --local gitalias.topic.base.branch.name "foo" 
+  #    $ git config --local init.topicBranch "foo" 
   #
-  #    $ git config --global gitalias.topic.base.branch.name "foo" 
+  #    $ git config --global init.topicBranch "foo" 
   #
-  #    $ git config --system gitalias.topic.base.branch.name "foo" 
+  #    $ git config --system init.topicBranch "foo" 
   #
   # Thanks to https://github.com/gwjo
-  ##
 
-  topic-base-branch-name = "!f(){ \
-    git config --get gitalias.topic.base.branch.name || printf '%s\n' main; \
+  topic-branch = "!f(){ \
+    git config --get init.topicBranch || printf '%s\n' main; \
   };f"
 
-  ##
   # Start a topic branch.
   #
   # Example:
@@ -1328,17 +1536,15 @@
   # Many teams share branches before they are fully ready, to help
   # the team provide feedback on the work-in-progress, and also to
   # run any automatic tests to verify the branch runs successfully.
-  ##
 
   topic-start = "!f(){ \
-    topic_branch=\"$1\"; \
-    base_branch=$(git topic-base-branch-name); \
-    git checkout \"$base_branch\"; git pull; \
-    git checkout -b \"$topic_branch\" \"$base_branch\"; \
-    git push --set-upstream origin \"$topic_branch\"; \
+    new_branch=\"$1\"; \
+    old_branch=$(git topic-branch); \
+    git checkout \"$old_branch\"; git pull; \
+    git checkout -b \"$new_branch\" \"$old_branch\"; \
+    git push --set-upstream origin \"$new_branch\"; \
   };f"
 
-  ##
   # Stop a topic branch; this must be the current branch.
   #
   # Example:
@@ -1366,26 +1572,24 @@
   # that the remote branch doesn't exist, so git is unable to delete it.
   # That's fine; it means someone else has already deleted the branch.
   # To synchronize your branch list, use "git fetch --prune".
-  ##
 
   topic-stop = "!f(){ \
-    topic_branch=$(git branch-name); \
-    base_branch=$(git topic-base-branch-name); \
-    if [ \"$topic_branch\" = \"$base_branch\" ]; then \
+    new_branch=$(git current-branch); \
+    old_branch=$(git topic-branch); \
+    if [ \"$new_branch\" = \"$old_branch\" ]; then \
       printf \"You are asking to do git topic-stop,\n\"; \
-      printf \"but you are not currently on a topic branch;\n\"; \
-      printf \"you are on the base branch: $base_branch.\n\"; \
+      printf \"but you are not on a new topic branch;\n\"; \
+      printf \"you are on the base topic branch: $old_branch.\n\"; \
       printf \"Please checkout the topic branch that you want,\n\"; \
-      printf \"then retry the git topic delete command.\n\"; \
+      printf \"then retry the git topic-stop command.\n\"; \
     else \
       git push; \
-      git checkout \"$base_branch\"; \
-      git branch --delete \"$topic_branch\"; \
-      git push origin \":$topic_branch\"; \
+      git checkout \"$old_branch\"; \
+      git branch --delete \"$new_branch\"; \
+      git push origin \":$new_branch\"; \
     fi; \
   };f"
 
-  ##
   # Update the current topic branch by synchronizing changes.
   #
   # Example:
@@ -1402,24 +1606,22 @@
   # to ensure that any available updates are successfully integrated.
   #
   # Customize this alias as you like for your own workflow.
-  ##
 
   topic-sync = "!f(){ \
-    topic_branch=$(git branch-name); \
-    base_branch=$(git topic-base-branch-name); \
-    if [ \"$topic_branch\" = \"$base_branch\" ]; then \
+    new_branch=$(git current-branch); \
+    old_branch=$(git topic-branch); \
+    if [ \"$new_branch\" = \"$old_branch\" ]; then \
       printf \"You are asking to do git topic-sync,\n\"; \
-      printf \"but you are not currently on a topic branch;\n\"; \
-      printf \"you are on the base branch: $base_branch.\n\"; \
+      printf \"but you are not on a new topic branch;\n\"; \
+      printf \"you are on the base topic branch: $old_branch.\n\"; \
       printf \"Please checkout the topic branch that you want,\n\"; \
-      printf \"then retry the git topic delete command.\n\"; \
+      printf \"then retry the git topic-sync command.\n\"; \
     else \
       git pull; \
       git push; \
     fi; \
   };f"
 
-  ##
   # Move the current topic branch, a.k.a. rename it.
   #
   # Example:
@@ -1432,11 +1634,10 @@
   #   2. Move the remote branch by pushing to origin.
   #
   # Customize this alias as you like for your own workflow.
-  ##
 
   topic-move = "!f(){ \
     new_branch=\"$1\"; \
-    old_branch=$(git branch-name); \
+    old_branch=$(git current-branch); \
     git branch --move \"$old_branch\" \"$new_branch\"; \
     git push origin \":$old_branch\" \"$new_branch\"; \
   };f"
@@ -1462,27 +1663,9 @@
   # show full history in gitk (including "deleted" branches and stashes)
   gitk-history-all = !gitk --all $( git fsck | awk '/dangling commit/ {print $3}' )
 
-  ### Ruby on Rails ###
-
-  # Do everything we can to synchronize all changes for a Ruby On Rails app.
-  # We like using rebase (instead of merge), bundle for gems, and rake db:migrate
-  rails-get = !"git pull --rebase; git submodule update --init --recursive; bundle check || bundle install; bundle exec rake db:migrate; bundle exec rake db:test:prepare"
-
   ### Subversion ###
 
   svn-b = svn branch
   svn-m = merge --squash
   svn-c = svn dcommit
   svn-cp = !GIT_EDITOR='sed -i /^git-svn-id:/d' git cherry-pick --edit
-
-  ##########################################################################
-
-  ##
-  # Git aliases to correct common typing mistakes, which git built-in autocorrection
-  # does not handle
-  ##
-
-  ### Use with shell alias `gitp = git` ###
-
-  ull = pull
-  ush = push
