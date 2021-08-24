@@ -11,6 +11,5 @@
   mab = merge --abort
   rbab = rebase --abort
   rbam = rebase --ammend
-  cull-local-branches = "!git checkout master && git branch --merged | xargs echo git branch --delete"
-  cull-remote-branches = !"git branch --remotes --merged origin/master \
-     | sed 's# *origin/##' | grep -v '^master$' xargs -I% git push origin :% 2>&1 | grep --colour=never 'deleted'"
+  cull-local-branches =  !"git checkout master && git branch --merged                                             | xargs -n1 -r     echo git branch --delete"
+  cull-remote-branches = !"git branch --remotes --merged origin/master | sed 's# *origin/##' | grep -v '^master$' | xargs -n1 -r -I% echo git push origin :%"
