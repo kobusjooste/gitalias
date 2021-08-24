@@ -270,9 +270,9 @@
   #     git config --global pull.rebase true
   #
   # To automatically do "pull --rebase" for any branch based on 
-  # the branch "main":
+  # the branch "master":
   #
-  #    git config branch.main.rebase true
+  #    git config branch.master.rebase true
   #
   # To automatically do "pull --rebase" for any newly-created branches:
   #
@@ -286,7 +286,7 @@
   # to our git host then git will automatically merge these together
   # and create a merge commit that looks like this in the history:
   #
-  #    12345678 - Merge branch 'foo' of bar into main
+  #    12345678 - Merge branch 'foo' of bar into master
   #
   # When we use "git pull --rebase", git does a fetch then a rebase.
   # A rebase resets the HEAD of your local branch to be the same as
@@ -507,7 +507,7 @@
   lasttagged = !git describe --tags `git rev-list --tags --max-count=1`
 
   # From https://gist.github.com/492227
-  heads = !"git log origin/main.. --format='%Cred%h%Creset;%C(yellow)%an%Creset;%H;%Cblue%f%Creset' | git name-rev --stdin --always --name-only | column -t -s';'"
+  heads = !"git log origin/master.. --format='%Cred%h%Creset;%C(yellow)%an%Creset;%H;%Cblue%f%Creset' | git name-rev --stdin --always --name-only | column -t -s';'"
 
   ### diff-* ###
 
@@ -556,7 +556,7 @@
   merge-span-difftool = !"git difftool `git merge-span ... $1`"
 
   # Interactively rebase all the commits on the current branch
-  rebase-branch = !"git rebase --interactive `git merge-base main HEAD`"
+  rebase-branch = !"git rebase --interactive `git merge-base master HEAD`"
 
   # Sort by date for branches; can be useful for spring cleaning
   refs-by-date = for-each-ref --sort=-committerdate --format='%(committerdate:short) %(refname:short)'
@@ -669,7 +669,7 @@
   log-refs = log --all --graph --decorate --oneline --simplify-by-decoration --no-merges
   log-timeline = log --format='%h %an %ar - %s'
   log-local = log --oneline origin..HEAD
-  log-fetched = log --oneline HEAD..origin/main
+  log-fetched = log --oneline HEAD..origin/master
 
   # chart: show a summary chart of activity per author.
   #
@@ -998,7 +998,7 @@
   #  $ git issues v1.0..v1.1
   #
   # But will work with any valid commit range:
-  #  $ git issues main..HEAD
+  #  $ git issues master..HEAD
 
   issues = !sh -c \"git log $1 --oneline | grep -o \\\"ISSUE-[0-9]\\+\\\" | sort -u\"
 
@@ -1126,11 +1126,11 @@
   get = !git fetch --prune && git pull --rebase && git submodule update --init --recursive
   put = !git commit --all && git push
 
-  # Do everything we can to make the local repo like the main branch.
+  # Do everything we can to make the local repo like the master branch.
   #
   # TODO: handle tags, and delete superfluous branches, and add error handling.
   #
-  mainly = !git checkout main && git fetch origin --prune && git reset --hard origin/main
+  masterly = !git checkout master && git fetch origin --prune && git reset --hard origin/master
 
   # Ignore all untracked files by appending them to .gitignore:
   ignore = "!git status | grep -P \"^\\t\" | grep -vF .gitignore | sed \"s/^\\t//\" >> .gitignore"
@@ -1265,14 +1265,14 @@
   unassume-all = "!git assumed | xargs -r git update-index --no-assume-unchanged"
   assumed  = !"git ls-files -v | grep ^h | cut -c 3-"
 
-  # Delete all branches that have already been merged into the main branch.
+  # Delete all branches that have already been merged into the master branch.
   cull-branches = !git cull-local-branches; git cull-remote-branches;
 
-  # Delete all local branches that have been merged into the local main branch.
-  cull-local-branches = "!git checkout main && git branch --merged | xargs -r git branch --delete"
+  # Delete all local branches that have been merged into the local master branch.
+  cull-local-branches = "!git checkout master && git branch --merged | xargs -r git branch --delete"
 
-  # Delete all remote branches that have been merged into the remote main branch.
-  cull-remote-branches = !"git branch --remotes --merged origin/main | sed 's# *origin/##' | grep -v '^main$' | xargs -r -I% git push origin :% 2>&1 | grep --colour=never 'deleted'"
+  # Delete all remote branches that have been merged into the remote master branch.
+  cull-remote-branches = !"git branch --remotes --merged origin/master | sed 's# *origin/##' | grep -v '^master$' | xargs -r -I% git push origin :% 2>&1 | grep --colour=never 'deleted'"
 
   # Publish the current branch by pushing it to the remote "origin",
   # and setting the current branch to track the upstream branch.
@@ -1288,13 +1288,13 @@
   # git outbound: show outgoing changes with upstream.
   outbound = log @{upstream}..
 
-  # Delete a branch name, then create the same branch name based on main -
-  # useful if you have, for example, a development branch and main branch
+  # Delete a branch name, then create the same branch name based on master -
+  # useful if you have, for example, a development branch and master branch
   # and they go out of sync, and you want to nuke the development branch.
   #
   # Calls the `publish` and `unpublish` aliases.
   #
-  reincarnate = !"f() { [[ -n $@ ]] && git checkout \"$@\" && git unpublish && git checkout main && git branch -D \"$@\" && git checkout -b \"$@\" && git publish; }; f"
+  reincarnate = !"f() { [[ -n $@ ]] && git checkout \"$@\" && git unpublish && git checkout master && git branch -D \"$@\" && git checkout -b \"$@\" && git publish; }; f"
 
   # Friendly wording is easier to remember.
   # Thanks to http://gggritso.com/human-git-aliases
@@ -1449,7 +1449,7 @@
   # Use graphviz for display.
   # This produces output that can be displayed using dotty, for example:
   #   $ git graphviz HEAD~100..HEAD~60 | dotty /dev/stdin
-  #   $ git graphviz --first-parent main | dotty /dev/stdin
+  #   $ git graphviz --first-parent master | dotty /dev/stdin
   graphviz = !"f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
 
   # Serve the local directory by starting a git server daemon, so others can pull/push from my machine
@@ -1491,13 +1491,13 @@
   #
   # Customize these aliases as you like for your own workflow.
 
-  # Provide the name of the topic base branch, such as "main".
+  # Provide the name of the topic base branch, such as "master".
   #
   # When we create a new topic branch, we base it on the topic base branch.
-  # Many projects use the topic base branch name "main". Some projects use 
+  # Many projects use the topic base branch name "master". Some projects use 
   # use "trunk", "develop", "deploy", "integrate", "release", "green", etc.
   #
-  # The topic base branch name is "main" by default. You can customize 
+  # The topic base branch name is "master" by default. You can customize 
   # the name for your local repo, or your own user's global configuration, 
   # or your system configuration, by using `git config` such as:
   #
@@ -1510,7 +1510,7 @@
   # Thanks to https://github.com/gwjo
 
   topic-branch = "!f(){ \
-    git config --get init.topicBranch || printf '%s\n' main; \
+    git config --get init.topicBranch || printf '%s\n' master; \
   };f"
 
   # Start a topic branch.
